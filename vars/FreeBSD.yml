@@ -1,0 +1,23 @@
+---
+
+# Installation
+# ------------
+
+# Packages needed to ensure Duplicati is working.
+duplicati__requirements:
+    - ca_root_nss
+    - mono
+    - sqlite3
+    - unzip
+
+# Duplicati user main group.
+duplicati__group: wheel
+
+# Installation directory.
+duplicati__dir: '/usr/local/opt/duplicati'
+
+# Path to the Duplicati service.
+duplicati__service_path: '/usr/local/etc/rc.d'
+
+# Duplicati data path.
+duplicati__data_dir: '/var/db/duplicati'

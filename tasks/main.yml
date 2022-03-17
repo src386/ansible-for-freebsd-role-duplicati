@@ -1,0 +1,65 @@
+---
+- name: Include OS-specific variables
+  include_vars: '{{ item }}'
+  with_first_found:
+    - '{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml'
+    - '{{ ansible_distribution }}.yml'
+    - '{{ ansible_os_family }}_{{ ansible_distribution_major_version }}.yml'
+    - '{{ ansible_os_family }}.yml'
+
+- name: Ensure requirements are Present
+  package:
+    name: '{{ duplicati__requirements }}'
+    state: present
+
+- name: Ensure Duplicati user is Present
+  user:
+    name: '{{ duplicati__user }}'
+    uid: '{{ duplicati__user_uid | d(omit) }}'
+  when: duplicati__user != "root"
+
+- name: Ensure Duplicati Installation Directory is Present
+  file:
+    path: '{{ duplicati__dir }}'
+    state: directory
+    owner: '{{ duplicati__user }}'
+    group: '{{ duplicati__group }}'
+    mode: 'u=rwx,g=rx,o=rx'
+
+- name: Ensure Duplicati is Present
+  unarchive:
+    src: '{{ duplicati__zip }}'
+    dest: '{{ duplicati__dir }}/'
+    owner: '{{ duplicati__user }}'
+    group: '{{ duplicati__group }}'
+    mode: 'u=rwx,g=rx,o=rx'
+    remote_src: true
+  notify:
+    - restart duplicati
+
+- name: Ensure rc.d directory is Present (FreeBSD)
+  file:
+    path: '{{ duplicati__service_path }}'
+    state: directory
+    owner: '{{ duplicati__user }}'
+    group: '{{ duplicati__group }}'
+    mode: 'u=rwx,g=rx,o=rx'
+  when: ansible_os_family == "FreeBSD"
+
+- name: Ensure Duplicati rc.d Service is Present (FreeBSD)
+  template:
+    src: 'rc.d/duplicati.j2'
+    dest: '{{ duplicati__service_path }}/duplicati'
+    owner: '{{ duplicati__user }}'
+    group: '{{ duplicati__group }}'
+    mode: 'u=rwx,g=rx,o=rx'
+  when:
+    - ansible_os_family == "FreeBSD"
+  notify:
+    - restart duplicati
+
+- name: Ensure Duplicati Service is Enabled and Started
+  service:
+    name: duplicati
+    enabled: yes
+    state: started

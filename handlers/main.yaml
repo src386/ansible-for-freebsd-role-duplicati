@@ -1,0 +1,6 @@
+---
+
+- name: restart duplicati
+  service:
+    name: duplicati
+    state: restarted

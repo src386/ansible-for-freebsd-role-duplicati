@@ -1,0 +1,22 @@
+---
+
+# Installation
+# ------------
+
+# Download URL for zip version.
+duplicati__zip: 'https://github.com/duplicati/duplicati/releases/download/v2.0.6.101-2.0.6.101_canary_2022-03-13/duplicati-2.0.6.101_canary_2022-03-13.zip'
+
+# Configuration
+# -------------
+
+# Listen interface.
+duplicati__listen_interface: '127.0.0.1'
+
+# Listen port.
+duplicati__port: 8200
+
+# Duplicati user, root wont work on FreeBSD.
+duplicati__user: duplicati
+
+# Duplicati user ID.
+# duplicati__user_uid: 5000
